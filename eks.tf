@@ -1,7 +1,9 @@
-resource "aws_eks_cluster" "payments" {
-  name     = "payments"
-  role_arn = aws_iam_role.payments_eks.arn
-  version  = "1.31"
+data "aws_eks_cluster_versions" "shared" {}
+
+resource "aws_eks_cluster" "shared" {
+  name     = "shared"
+  role_arn = aws_iam_role.shared_eks.arn
+  version  = data.aws_eks_cluster_versions.shared.cluster_versions[0].cluster_version
 
   access_config {
     authentication_mode                         = "API"
@@ -17,10 +19,10 @@ resource "aws_eks_cluster" "payments" {
   ]
 }
 
-resource "aws_eks_node_group" "payments" {
-  cluster_name    = aws_eks_cluster.payments.name
+resource "aws_eks_node_group" "shared" {
+  cluster_name    = aws_eks_cluster.shared.name
   node_group_name = "group-1"
-  node_role_arn   = aws_iam_role.payments_worker.arn
+  node_role_arn   = aws_iam_role.shared_worker.arn
   subnet_ids      = aws_subnet.public.*.id
 
   scaling_config {
@@ -40,4 +42,16 @@ resource "aws_eks_node_group" "payments" {
     aws_iam_role_policy_attachment.cni,
     aws_iam_role_policy_attachment.ecr_read_only
   ]
+}
+
+data "aws_eks_addon_version" "eks_pod_identity_agent_latest_version" {
+  addon_name         = "eks-pod-identity-agent"
+  kubernetes_version = aws_eks_cluster.shared.version
+  most_recent        = true
+}
+
+resource "aws_eks_addon" "eks_pod_identity_agent" {
+  cluster_name  = aws_eks_cluster.shared.name
+  addon_name    = data.aws_eks_addon_version.eks_pod_identity_agent_latest_version.id
+  addon_version = data.aws_eks_addon_version.eks_pod_identity_agent_latest_version.version
 }

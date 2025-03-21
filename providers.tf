@@ -2,7 +2,7 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "5.91.0"
+      version = "5.92.0"
     }
     kubernetes = {
       source  = "hashicorp/kubernetes"
@@ -23,12 +23,12 @@ provider "aws" {
   }
 }
 
-data "aws_eks_cluster_auth" "payments" {
-  name = aws_eks_cluster.payments.name
+data "aws_eks_cluster_auth" "shared" {
+  name = aws_eks_cluster.shared.name
 }
 
 provider "kubernetes" {
-  host                   = aws_eks_cluster.payments.endpoint
-  cluster_ca_certificate = base64decode(aws_eks_cluster.payments.certificate_authority[0].data)
-  token                  = data.aws_eks_cluster_auth.payments.token
+  host                   = aws_eks_cluster.shared.endpoint
+  cluster_ca_certificate = base64decode(aws_eks_cluster.shared.certificate_authority[0].data)
+  token                  = data.aws_eks_cluster_auth.shared.token
 }

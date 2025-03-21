@@ -1,5 +1,5 @@
-resource "aws_iam_role" "payments_eks" {
-  name = "EKSClusterRoleForPayments"
+resource "aws_iam_role" "shared_eks" {
+  name = "EKSClusterRoleForshared"
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [{
@@ -16,12 +16,12 @@ resource "aws_iam_role" "payments_eks" {
 }
 
 resource "aws_iam_role_policy_attachment" "eks" {
-  role       = aws_iam_role.payments_eks.name
+  role       = aws_iam_role.shared_eks.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
 }
 
-resource "aws_iam_role" "payments_worker" {
-  name = "EKSClusterRoleForPaymentsWorker"
+resource "aws_iam_role" "shared_worker" {
+  name = "EKSClusterRoleForsharedWorker"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -39,16 +39,16 @@ resource "aws_iam_role" "payments_worker" {
 }
 
 resource "aws_iam_role_policy_attachment" "worker" {
-  role       = aws_iam_role.payments_worker.name
+  role       = aws_iam_role.shared_worker.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
 }
 
 resource "aws_iam_role_policy_attachment" "cni" {
-  role       = aws_iam_role.payments_worker.name
+  role       = aws_iam_role.shared_worker.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
 }
 
 resource "aws_iam_role_policy_attachment" "ecr_read_only" {
-  role       = aws_iam_role.payments_worker.name
+  role       = aws_iam_role.shared_worker.name
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
 }
