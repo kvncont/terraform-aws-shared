@@ -1,5 +1,5 @@
 resource "aws_iam_role" "shared_eks" {
-  name = "EKSClusterRoleForshared"
+  name = "EKSClusterRoleForShared"
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [{
@@ -21,7 +21,7 @@ resource "aws_iam_role_policy_attachment" "eks" {
 }
 
 resource "aws_iam_role" "shared_worker" {
-  name = "EKSClusterRoleForsharedWorker"
+  name = "EKSClusterRoleForSharedWorker"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
