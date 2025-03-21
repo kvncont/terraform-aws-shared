@@ -52,6 +52,6 @@ data "aws_eks_addon_version" "eks_pod_identity_agent_latest_version" {
 
 resource "aws_eks_addon" "eks_pod_identity_agent" {
   cluster_name  = aws_eks_cluster.shared.name
-  addon_name    = data.aws_eks_addon_version.eks_pod_identity_agent_latest_version.id
+  addon_name    = data.aws_eks_addon_version.eks_pod_identity_agent_latest_version.addon_name
   addon_version = data.aws_eks_addon_version.eks_pod_identity_agent_latest_version.version
 }
